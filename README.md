@@ -13,7 +13,7 @@
 CoverPrint converts existing PNG and JPEG cover artwork into A4 landscape PDFs for DVD and Blu-ray cases.
 
 <p align="center">
-  <img width="730" height="548" alt="CoverPrint" src="https://github.com/user-attachments/assets/b81efea5-7bbf-43e5-be23-a0e2d7881800" />
+  <img width="530" height="548" alt="CoverPrint" src="https://github.com/user-attachments/assets/b81efea5-7bbf-43e5-be23-a0e2d7881800" />
 </p>
 
 ## Downloads
