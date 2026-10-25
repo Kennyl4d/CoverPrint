@@ -9,7 +9,7 @@ jobs:
   flatpak:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
       options: --privileged
     steps:
       - uses: actions/checkout@v4
@@ -21,18 +21,18 @@ jobs:
       - name: Upload release bundle
         uses: actions/upload-artifact@v4
         with:
-          name: coverprint-v1.0.1
+          name: coverprint-v1.1.0
           path: CoverPrint.flatpak
           if-no-files-found: error
   release:
     needs: flatpak
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: coverprint-v1.0.1
-      - name: Publish CoverPrint 1.0.1 once
+          name: coverprint-v1.1.0
+      - name: Publish CoverPrint 1.1.0 once
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -42,8 +42,8 @@ jobs:
             echo "Skipping outdated build: main has advanced."
             exit 0
           fi
-          if gh release view v1.0.1 >/dev/null 2>&1; then
-            echo "Release v1.0.1 already exists; not replacing it."
+          if gh release view v1.1.0 >/dev/null 2>&1; then
+            echo "Release v1.1.0 already exists; not replacing it."
           else
-            gh release create v1.0.1 CoverPrint.flatpak --target "$GITHUB_SHA" --title "CoverPrint 1.0.1" --notes "Clarified GPL-3.0-only legal notice in About dialog."
+            gh release create v1.1.0 CoverPrint.flatpak --target "$GITHUB_SHA" --title "CoverPrint 1.1.0" --notes "Updated to GNOME 51 and improved app-store metadata."
           fi
