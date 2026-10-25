@@ -65,7 +65,7 @@ class CoverPrint(Adw.Application):
         dialog = Adw.AboutDialog()
         dialog.set_application_name("CoverPrint")
         dialog.set_application_icon("io.github.kennyl4d.CoverPrint")
-        dialog.set_version("1.0.1")
+        dialog.set_version("1.1.0")
         dialog.set_developer_name("Kennyl4d")
         dialog.set_comments("Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.")
         dialog.set_website("https://github.com/Kennyl4d/CoverPrint")
