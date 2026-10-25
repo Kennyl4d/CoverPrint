@@ -2,10 +2,46 @@
 <component type="desktop-application">
   <id>io.github.kennyl4d.CoverPrint</id>
   <name>CoverPrint</name>
-  <summary>Stampa copertine DVD e Blu-ray nelle dimensioni corrette</summary>
+  <summary>Print DVD and Blu-ray covers at accurate physical dimensions</summary>
+  <summary xml:lang="it">Stampa copertine DVD e Blu-ray nelle dimensioni corrette</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only</project_license>
-  <description><p>Importa una copertina ed esporta un PDF A4 in scala reale.</p></description>
+  <developer id="io.github.kennyl4d"><name>Kennyl4d</name></developer>
+  <url type="homepage">https://github.com/Kennyl4d/CoverPrint</url>
+  <url type="bugtracker">https://github.com/Kennyl4d/CoverPrint/issues</url>
+  <url type="vcs-browser">https://github.com/Kennyl4d/CoverPrint</url>
+  <description>
+    <p>CoverPrint prepares existing DVD and Blu-ray cover artwork for printing at precise physical dimensions on A4 paper.</p>
+    <p>Choose a case size, select how the artwork fits, and export a print-ready PDF.</p>
+    <ul>
+      <li>DVD and Blu-ray case size presets</li>
+      <li>Exact fit, proportional fit, and fill-and-crop options</li>
+      <li>Optional crop marks and A4 landscape PDF output</li>
+      <li>Native GNOME interface with automatic system language detection</li>
+    </ul>
+  </description>
+  <categories>
+    <category>Graphics</category>
+    <category>Publishing</category>
+  </categories>
+  <keywords>
+    <keyword>DVD</keyword>
+    <keyword>Blu-ray</keyword>
+    <keyword>cover</keyword>
+    <keyword>print</keyword>
+    <keyword>PDF</keyword>
+  </keywords>
+  <content_rating type="oars-1.1"/>
   <launchable type="desktop-id">io.github.kennyl4d.CoverPrint.desktop</launchable>
-  <releases><release version="1.0.1" date="2026-10-25"><description><p>Clarified GPL-3.0-only legal notice in About dialog.</p></description></release><release version="1.0.0" date="2026-10-25"><description><p>initial Release</p></description></release></releases>
+  <releases>
+    <release version="1.1.0" date="2026-10-25">
+      <description><p>Updated to GNOME 51 and improved app-store metadata.</p></description>
+    </release>
+    <release version="1.0.1" date="2026-10-25">
+      <description><p>Clarified GPL-3.0-only legal notice in About dialog.</p></description>
+    </release>
+    <release version="1.0.0" date="2026-10-25">
+      <description><p>initial Release</p></description>
+    </release>
+  </releases>
 </component>
