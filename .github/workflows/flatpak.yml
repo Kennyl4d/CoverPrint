@@ -37,6 +37,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
+          CURRENT_HEAD="$(gh api "repos/$GH_REPO/commits/main" --jq .sha)"
+          if [ "$CURRENT_HEAD" != "$GITHUB_SHA" ]; then
+            echo "Skipping outdated build: main has advanced."
+            exit 0
+          fi
           if gh release view v1.0.0 >/dev/null 2>&1; then
             echo "Release v1.0.0 already exists; not replacing it."
           else
