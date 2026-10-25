@@ -40,7 +40,7 @@ class CoverPrint(Adw.Application):
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
         box.set_margin_top(20); box.set_margin_bottom(20)
         box.set_margin_start(20); box.set_margin_end(20)
-        self.win.set_child(box)
+        self.win.set_content(box)
         title = Gtk.Label(label="CoverPrint — Copertine pronte da stampare", xalign=0)
         title.add_css_class("title-2")
         box.append(title)
