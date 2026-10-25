@@ -24,10 +24,6 @@ flatpak install --user ./CoverPrint.flatpak
 
 Requires Flatpak and the GNOME 51 runtime.
 
-## Version 1.1.0
-
-This release migrates to the supported GNOME 51 runtime, reduces unnecessary sandbox permissions, and improves public app-store metadata. The release will be published after the build and application are verified.
-
 ## Features
 
 - Accurate DVD and Blu-ray cover size presets.
