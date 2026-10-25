@@ -24,15 +24,32 @@ class CoverPrint(Adw.Application):
         self.settings = Gio.Settings.new("io.github.kennyl4d.CoverPrint")
         self.style = Adw.StyleManager.get_default()
         self.apply_theme(self.settings.get_string("theme"))
+        about_action = Gio.SimpleAction.new("about", None)
+        about_action.connect("activate", self.show_about)
+        self.add_action(about_action)
+        for value in ("system", "light", "dark"):
+            action = Gio.SimpleAction.new("theme-" + value, None)
+            action.connect("activate", self.set_theme_action, value)
+            self.add_action(action)
 
     def apply_theme(self, value):
         schemes = {"system": Adw.ColorScheme.DEFAULT, "light": Adw.ColorScheme.FORCE_LIGHT, "dark": Adw.ColorScheme.FORCE_DARK}
         self.style.set_color_scheme(schemes.get(value, Adw.ColorScheme.DEFAULT))
 
-    def on_theme_changed(self, dropdown, _param):
-        value = ("system", "light", "dark")[dropdown.get_selected()]
+    def set_theme_action(self, _action, _parameter, value):
         self.settings.set_string("theme", value)
         self.apply_theme(value)
+
+    def show_about(self, *_):
+        dialog = Adw.AboutDialog()
+        dialog.set_application_name("CoverPrint")
+        dialog.set_application_icon("io.github.kennyl4d.CoverPrint")
+        dialog.set_version("0.2.0")
+        dialog.set_developer_name("Kennyl4d")
+        dialog.set_comments("Prepara copertine DVD e Blu-ray nelle dimensioni corrette per la stampa su A4.")
+        dialog.set_website("https://github.com/Kennyl4d/CoverPrint")
+        dialog.set_license_type(Gtk.License.MIT_X11)
+        dialog.present(self.win)
 
     def do_activate(self):
         self.win = Adw.ApplicationWindow(application=self, title="CoverPrint")
@@ -42,20 +59,22 @@ class CoverPrint(Adw.Application):
         box.set_margin_start(20); box.set_margin_end(20)
         toolbar = Adw.ToolbarView()
         header = Adw.HeaderBar()
+        menu = Gio.Menu()
+        appearance = Gio.Menu()
+        appearance.append("Segui il sistema", "app.theme-system")
+        appearance.append("Chiaro", "app.theme-light")
+        appearance.append("Scuro", "app.theme-dark")
+        menu.append_submenu("Aspetto", appearance)
+        menu.append("Informazioni su CoverPrint", "app.about")
+        menu_button = Gtk.MenuButton(icon_name="open-menu-symbolic", tooltip_text="Menu")
+        menu_button.set_menu_model(menu)
+        header.pack_end(menu_button)
         toolbar.add_top_bar(header)
         toolbar.set_content(box)
         self.win.set_content(toolbar)
         title = Gtk.Label(label="CoverPrint — Copertine pronte da stampare", xalign=0)
         title.add_css_class("title-2")
         box.append(title)
-        theme_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
-        theme_row.append(Gtk.Label(label="Aspetto", xalign=0, hexpand=True))
-        theme = Gtk.DropDown.new_from_strings(["Sistema", "Chiaro", "Scuro"])
-        current = self.settings.get_string("theme")
-        theme.set_selected({"system": 0, "light": 1, "dark": 2}.get(current, 0))
-        theme.connect("notify::selected", self.on_theme_changed)
-        theme_row.append(theme)
-        box.append(theme_row)
         open_btn = Gtk.Button(label="Apri copertina (PNG o JPEG)")
         open_btn.connect("clicked", self.open_image)
         box.append(open_btn)
