@@ -14,6 +14,9 @@ modules:
     buildsystem: simple
     build-commands:
       - install -Dm755 coverprint.py /app/bin/coverprint
+      - install -Dm644 io.github.kennyl4d.CoverPrint.svg /app/share/icons/hicolor/scalable/apps/io.github.kennyl4d.CoverPrint.svg
+      - install -Dm644 io.github.kennyl4d.CoverPrint.gschema.xml /app/share/glib-2.0/schemas/io.github.kennyl4d.CoverPrint.gschema.xml
+      - glib-compile-schemas /app/share/glib-2.0/schemas
       - install -Dm644 io.github.kennyl4d.CoverPrint.desktop /app/share/applications/io.github.kennyl4d.CoverPrint.desktop
       - install -Dm644 io.github.kennyl4d.CoverPrint.metainfo.xml /app/share/metainfo/io.github.kennyl4d.CoverPrint.metainfo.xml
     sources:
