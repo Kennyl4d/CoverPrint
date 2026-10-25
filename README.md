@@ -10,10 +10,10 @@
 <a href="LICENSE"><img alt="License: GPL v3.0" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
 </p>
 
-CoverPrint converts existing PNG and JPEG cover artwork into A4 landscape PDFs, centered and sized for DVD and Blu-ray cases.
+CoverPrint converts existing PNG and JPEG cover artwork into A4 landscape PDFs for DVD and Blu-ray cases.
 
 <p align="center">
-  <img width="730" height="748" alt="CoverPrint" src="https://github.com/user-attachments/assets/b81efea5-7bbf-43e5-be23-a0e2d7881800" />
+  <img width="730" height="548" alt="CoverPrint" src="https://github.com/user-attachments/assets/b81efea5-7bbf-43e5-be23-a0e2d7881800" />
 </p>
 
 ## Downloads
