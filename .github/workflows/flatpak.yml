@@ -21,7 +21,7 @@ jobs:
       - name: Upload release bundle
         uses: actions/upload-artifact@v4
         with:
-          name: coverprint-v1.0.0
+          name: coverprint-v1.0.1
           path: CoverPrint.flatpak
           if-no-files-found: error
   release:
@@ -31,8 +31,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: coverprint-v1.0.0
-      - name: Publish initial release once
+          name: coverprint-v1.0.1
+      - name: Publish CoverPrint 1.0.1 once
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -42,8 +42,8 @@ jobs:
             echo "Skipping outdated build: main has advanced."
             exit 0
           fi
-          if gh release view v1.0.0 >/dev/null 2>&1; then
-            echo "Release v1.0.0 already exists; not replacing it."
+          if gh release view v1.0.1 >/dev/null 2>&1; then
+            echo "Release v1.0.1 already exists; not replacing it."
           else
-            gh release create v1.0.0 CoverPrint.flatpak --target "$GITHUB_SHA" --title "CoverPrint 1.0.0" --notes "initial Release"
+            gh release create v1.0.1 CoverPrint.flatpak --target "$GITHUB_SHA" --title "CoverPrint 1.0.1" --notes "Clarified GPL-3.0-only legal notice in About dialog."
           fi
