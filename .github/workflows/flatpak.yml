@@ -40,5 +40,5 @@ jobs:
           if gh release view v1.0.0 >/dev/null 2>&1; then
             echo "Release v1.0.0 already exists; not replacing it."
           else
-            gh release create v1.0.0 CoverPrint.flatpak --target "$GITHUB_SHA" --title "CoverPrint 1.0.0" --notes "Initial Release"
+            gh release create v1.0.0 CoverPrint.flatpak --target "$GITHUB_SHA" --title "CoverPrint 1.0.0" --notes "initial Release"
           fi
