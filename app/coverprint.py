@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, Gio
+from gi.repository import Gtk, Gio, Gdk, GdkPixbuf
 import cairo
 import math
 
@@ -72,10 +72,10 @@ class CoverPrint(Gtk.Application):
         try:
             f = dialog.open_finish(result)
             data = f.load_contents(None)[1]
-            import io
-            from PIL import Image
-            im = Image.open(io.BytesIO(data)).convert("RGB")
-            self.image_bytes = im
+            loader = GdkPixbuf.PixbufLoader.new()
+            loader.write(data)
+            loader.close()
+            self.image_bytes = loader.get_pixbuf()
             self.filename.set_text(f.get_basename())
             self.picture.set_file(f)
             self.status.set_text("Copertina caricata. Seleziona il formato ed esporta.")
@@ -101,9 +101,6 @@ class CoverPrint(Gtk.Application):
             self.status.set_text(f"Esportazione non riuscita: {exc}")
 
     def export(self, path):
-        from PIL import Image
-        from tempfile import NamedTemporaryFile
-        import os
         wmm, hmm = list(PRESETS.values())[self.preset.get_selected()]
         pw, ph = 297 * MM_TO_PT, 210 * MM_TO_PT
         w, h = wmm * MM_TO_PT, hmm * MM_TO_PT
@@ -112,27 +109,19 @@ class CoverPrint(Gtk.Application):
         ctx = cairo.Context(surface)
         ctx.set_source_rgb(1, 1, 1)
         ctx.paint()
-        im = self.image_bytes
-        iw, ih = im.size
+        pixbuf = self.image_bytes
+        iw, ih = pixbuf.get_width(), pixbuf.get_height()
         scale = max(w/iw, h/ih) if self.crop.get_active() else min(w/iw, h/ih)
         dw, dh = iw*scale, ih*scale
         dx, dy = x+(w-dw)/2, y+(h-dh)/2
-        # Cairo PNG loader works reliably with a temporary RGBA PNG.
-        with NamedTemporaryFile(suffix=".png", delete=False) as temp:
-            temp_path = temp.name
-        try:
-            im.save(temp_path, format="PNG")
-            source = cairo.ImageSurface.create_from_png(temp_path)
-            ctx.save()
-            ctx.rectangle(x, y, w, h)
-            ctx.clip()
-            ctx.translate(dx, dy)
-            ctx.scale(dw / iw, dh / ih)
-            ctx.set_source_surface(source, 0, 0)
-            ctx.paint()
-            ctx.restore()
-        finally:
-            os.unlink(temp_path)
+        ctx.save()
+        ctx.rectangle(x, y, w, h)
+        ctx.clip()
+        ctx.translate(dx, dy)
+        ctx.scale(dw / iw, dh / ih)
+        Gdk.cairo_set_source_pixbuf(ctx, pixbuf, 0, 0)
+        ctx.paint()
+        ctx.restore()
         if self.marks.get_active():
             ctx.set_source_rgb(0, 0, 0)
             ctx.set_line_width(.35)
