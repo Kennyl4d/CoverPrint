@@ -5,7 +5,7 @@
 <p align="center"><strong>A lightweight DVD and Blu-ray cover printing tool for Linux.</strong><br>Prepare print-ready covers at accurate physical dimensions with a clean GNOME interface.</p>
 
 <p align="center">
-<a href="../../releases/tag/v1.0.1"><img alt="Download for Linux" src="https://img.shields.io/badge/Download-Linux-0078D4?style=flat-square"></a>
+<a href="../../releases"><img alt="Download for Linux" src="https://img.shields.io/badge/Download-Linux-0078D4?style=flat-square"></a>
 <a href="../../actions/workflows/flatpak.yml"><img alt="Flatpak build" src="https://img.shields.io/badge/Flatpak%20build-GitHub%20Actions-555555?style=flat-square"></a>
 <a href="LICENSE"><img alt="License: GPL v3.0" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
 </p>
@@ -22,7 +22,11 @@ Install with a Flatpak-compatible software manager, or run:
 flatpak install --user ./CoverPrint.flatpak
 ```
 
-Requires Flatpak and the GNOME 48 runtime.
+Requires Flatpak and the GNOME 51 runtime.
+
+## Version 1.1.0
+
+This release migrates to the supported GNOME 51 runtime, reduces unnecessary sandbox permissions, and improves public app-store metadata. The release will be published after the build and application are verified.
 
 ## Features
 
