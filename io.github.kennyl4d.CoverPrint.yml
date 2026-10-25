@@ -1,6 +1,6 @@
 app-id: io.github.kennyl4d.CoverPrint
 runtime: org.gnome.Platform
-runtime-version: '48'
+runtime-version: '51'
 sdk: org.gnome.Sdk
 command: coverprint
 finish-args:
@@ -8,7 +8,6 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
   - --device=dri
-  - --filesystem=xdg-run/gvfs
 modules:
   - name: coverprint
     buildsystem: simple
