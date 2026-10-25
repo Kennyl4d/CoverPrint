@@ -69,7 +69,8 @@ class CoverPrint(Adw.Application):
         dialog.set_developer_name("Kennyl4d")
         dialog.set_comments("Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.")
         dialog.set_website("https://github.com/Kennyl4d/CoverPrint")
-        dialog.set_license_type(Gtk.License.GPL_3_0)
+        dialog.set_license_type(Gtk.License.CUSTOM)
+        dialog.set_license("CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.")
         dialog.present(self.win)
 
     def do_activate(self):
