@@ -7,5 +7,5 @@
   <project_license>GPL-3.0-only</project_license>
   <description><p>Importa una copertina ed esporta un PDF A4 in scala reale.</p></description>
   <launchable type="desktop-id">io.github.kennyl4d.CoverPrint.desktop</launchable>
-  <releases><release version="1.0.0" date="2026-10-25"><description><p>Initial Release</p></description></release></releases>
+  <releases><release version="1.0.0" date="2026-10-25"><description><p>initial Release</p></description></release></releases>
 </component>
