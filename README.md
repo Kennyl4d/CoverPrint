@@ -6,7 +6,7 @@
 
 <p align="center">
 <a href="../../releases"><img alt="Download for Linux" src="https://img.shields.io/badge/Download-Linux-0078D4?style=flat-square"></a>
-<a href="../../actions/workflows/flatpak.yml"><img alt="Flatpak build" src="https://img.shields.io/badge/Flatpak%20build-GitHub%20Actions-555555?style=flat-square"></a>
+<a href="../../actions/workflows/flatpak.yml"><img alt="Flatpak build" src="https://github.com/Kennyl4d/CoverPrint/actions/workflows/flatpak.yml/badge.svg?branch=main"></a>
 <a href="LICENSE"><img alt="License: GPL v3.0" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
 </p>
 
