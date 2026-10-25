@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, Gio, Gdk, GdkPixbuf
+gi.require_version("Adw", "1")
+from gi.repository import Gtk, Gio, Gdk, GdkPixbuf, Adw
 import cairo
 import math
 
@@ -14,15 +15,27 @@ PRESETS = {
 }
 MM_TO_PT = 72 / 25.4
 
-class CoverPrint(Gtk.Application):
+class CoverPrint(Adw.Application):
     def __init__(self):
         super().__init__(application_id="io.github.kennyl4d.CoverPrint")
         self.image_path = None
         self.image_bytes = None
         self.texture = None
+        self.settings = Gio.Settings.new("io.github.kennyl4d.CoverPrint")
+        self.style = Adw.StyleManager.get_default()
+        self.apply_theme(self.settings.get_string("theme"))
+
+    def apply_theme(self, value):
+        schemes = {"system": Adw.ColorScheme.DEFAULT, "light": Adw.ColorScheme.FORCE_LIGHT, "dark": Adw.ColorScheme.FORCE_DARK}
+        self.style.set_color_scheme(schemes.get(value, Adw.ColorScheme.DEFAULT))
+
+    def on_theme_changed(self, dropdown, _param):
+        value = ("system", "light", "dark")[dropdown.get_selected()]
+        self.settings.set_string("theme", value)
+        self.apply_theme(value)
 
     def do_activate(self):
-        self.win = Gtk.ApplicationWindow(application=self, title="CoverPrint")
+        self.win = Adw.ApplicationWindow(application=self, title="CoverPrint")
         self.win.set_default_size(680, 560)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
         box.set_margin_top(20); box.set_margin_bottom(20)
@@ -31,6 +44,14 @@ class CoverPrint(Gtk.Application):
         title = Gtk.Label(label="CoverPrint — Copertine pronte da stampare", xalign=0)
         title.add_css_class("title-2")
         box.append(title)
+        theme_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        theme_row.append(Gtk.Label(label="Aspetto", xalign=0, hexpand=True))
+        theme = Gtk.DropDown.new_from_strings(["Sistema", "Chiaro", "Scuro"])
+        current = self.settings.get_string("theme")
+        theme.set_selected({"system": 0, "light": 1, "dark": 2}.get(current, 0))
+        theme.connect("notify::selected", self.on_theme_changed)
+        theme_row.append(theme)
+        box.append(theme_row)
         open_btn = Gtk.Button(label="Apri copertina (PNG o JPEG)")
         open_btn.connect("clicked", self.open_image)
         box.append(open_btn)
