@@ -1,8 +1,11 @@
 [Desktop Entry]
 Type=Application
 Name=CoverPrint
-Comment=Prepara copertine DVD e Blu-ray per la stampa
+Comment=Prepare DVD and Blu-ray covers for printing
+Comment[it]=Prepara copertine DVD e Blu-ray per la stampa
 Exec=coverprint
 Icon=io.github.kennyl4d.CoverPrint
 Terminal=false
 Categories=Graphics;Publishing;
+Keywords=DVD;Blu-ray;cover;print;PDF;disc;
+StartupNotify=true
