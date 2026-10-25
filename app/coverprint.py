@@ -87,8 +87,9 @@ class CoverPrint(Adw.Application):
         box.append(Gtk.Label(label="Formato custodia", xalign=0))
         self.preset = Gtk.DropDown.new_from_strings(list(PRESETS))
         box.append(self.preset)
-        self.crop = Gtk.CheckButton(label="Riempi e ritaglia (anziché adattare con margini)")
-        box.append(self.crop)
+        box.append(Gtk.Label(label="Adattamento immagine", xalign=0))
+        self.fit_mode = Gtk.DropDown.new_from_strings(["Adatta esattamente (senza tagli)", "Mantieni proporzioni (con margini)", "Riempi e ritaglia"])
+        box.append(self.fit_mode)
         self.marks = Gtk.CheckButton(label="Aggiungi segni di taglio")
         self.marks.set_active(True)
         box.append(self.marks)
@@ -155,8 +156,12 @@ class CoverPrint(Adw.Application):
         ctx.paint()
         pixbuf = self.image_bytes
         iw, ih = pixbuf.get_width(), pixbuf.get_height()
-        scale = max(w/iw, h/ih) if self.crop.get_active() else min(w/iw, h/ih)
-        dw, dh = iw*scale, ih*scale
+        mode = self.fit_mode.get_selected()
+        if mode == 0:
+            dw, dh = w, h
+        else:
+            scale = min(w/iw, h/ih) if mode == 1 else max(w/iw, h/ih)
+            dw, dh = iw*scale, ih*scale
         dx, dy = x+(w-dw)/2, y+(h-dh)/2
         ctx.save()
         ctx.rectangle(x, y, w, h)
