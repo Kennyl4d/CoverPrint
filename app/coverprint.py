@@ -82,9 +82,9 @@ class CoverPrint(Adw.Application):
         header = Adw.HeaderBar()
         menu = Gio.Menu()
         appearance = Gio.Menu()
-        appearance.append("Segui il sistema", "app.theme-system")
-        appearance.append("Chiaro", "app.theme-light")
-        appearance.append("Scuro", "app.theme-dark")
+        appearance.append(tr("Follow system"), "app.theme-system")
+        appearance.append(tr("Light"), "app.theme-light")
+        appearance.append(tr("Dark"), "app.theme-dark")
         menu.append_submenu(tr("Appearance"), appearance)
         menu.append(tr("About CoverPrint"), "app.about")
         menu_button = Gtk.MenuButton(icon_name="open-menu-symbolic", tooltip_text=tr("Menu"))
@@ -146,7 +146,7 @@ class CoverPrint(Adw.Application):
             self.picture.set_file(f)
             self.status.set_text(tr("Cover loaded. Select a format and export."))
         except Exception as exc:
-            self.status.set_text(f"Impossibile aprire l'immagine: {exc}")
+            self.status.set_text(tr("Unable to open image: {error}").format(error=exc))
 
     def save_pdf(self, *_):
         if self.image_bytes is None:
