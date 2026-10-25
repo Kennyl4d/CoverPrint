@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="io.github.kennyl4d.CoverPrint" path="/io/github/kennyl4d/CoverPrint/">
+    <key name="theme" type="s">
+      <default>'system'</default>
+      <summary>Appearance preference</summary>
+      <description>system, light or dark</description>
+    </key>
+  </schema>
+</schemalist>
