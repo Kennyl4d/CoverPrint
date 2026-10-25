@@ -5,6 +5,26 @@ gi.require_version("Adw", "1")
 from gi.repository import Gtk, Gio, Gdk, GdkPixbuf, Adw
 import cairo
 import math
+import os
+import locale
+from translations import TRANSLATIONS
+
+
+def system_language():
+    # Honor standard Linux locale precedence, including Flatpak locale settings.
+    raw = os.environ.get("LANGUAGE", "").split(":")[0] or os.environ.get("LC_ALL") or os.environ.get("LC_MESSAGES") or os.environ.get("LANG") or "en"
+    code = raw.split(".")[0].replace("-", "_")
+    if code.lower().startswith("zh"):
+        return "zh_TW" if any(part in code.lower() for part in ("tw", "hk", "hant")) else "zh_CN"
+    if code.lower().startswith("pt"):
+        return "pt_BR"
+    return code.split("_")[0].lower()
+
+
+_LANG = system_language()
+def tr(message):
+    return TRANSLATIONS.get(_LANG, {}).get(message, message)
+
 
 PRESETS = {
     "DVD standard (273 × 183 mm)": (273, 183),
@@ -21,6 +41,7 @@ class CoverPrint(Adw.Application):
         self.image_path = None
         self.image_bytes = None
         self.texture = None
+        self.set_resource_base_path("/io/github/kennyl4d/CoverPrint")
         self.settings = Gio.Settings.new("io.github.kennyl4d.CoverPrint")
         self.style = Adw.StyleManager.get_default()
         self.apply_theme(self.settings.get_string("theme"))
@@ -44,11 +65,11 @@ class CoverPrint(Adw.Application):
         dialog = Adw.AboutDialog()
         dialog.set_application_name("CoverPrint")
         dialog.set_application_icon("io.github.kennyl4d.CoverPrint")
-        dialog.set_version("0.2.0")
+        dialog.set_version("1.0.0")
         dialog.set_developer_name("Kennyl4d")
-        dialog.set_comments("Prepara copertine DVD e Blu-ray nelle dimensioni corrette per la stampa su A4.")
+        dialog.set_comments("Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.")
         dialog.set_website("https://github.com/Kennyl4d/CoverPrint")
-        dialog.set_license_type(Gtk.License.MIT_X11)
+        dialog.set_license_type(Gtk.License.GPL_3_0)
         dialog.present(self.win)
 
     def do_activate(self):
@@ -64,48 +85,48 @@ class CoverPrint(Adw.Application):
         appearance.append("Segui il sistema", "app.theme-system")
         appearance.append("Chiaro", "app.theme-light")
         appearance.append("Scuro", "app.theme-dark")
-        menu.append_submenu("Aspetto", appearance)
-        menu.append("Informazioni su CoverPrint", "app.about")
-        menu_button = Gtk.MenuButton(icon_name="open-menu-symbolic", tooltip_text="Menu")
+        menu.append_submenu(tr("Appearance"), appearance)
+        menu.append(tr("About CoverPrint"), "app.about")
+        menu_button = Gtk.MenuButton(icon_name="open-menu-symbolic", tooltip_text=tr("Menu"))
         menu_button.set_menu_model(menu)
         header.pack_end(menu_button)
         toolbar.add_top_bar(header)
         toolbar.set_content(box)
         self.win.set_content(toolbar)
-        title = Gtk.Label(label="CoverPrint — Copertine pronte da stampare", xalign=0)
+        title = Gtk.Label(label="CoverPrint — " + tr("Print-ready covers"), xalign=0)
         title.add_css_class("title-2")
         box.append(title)
-        open_btn = Gtk.Button(label="Apri copertina (PNG o JPEG)")
+        open_btn = Gtk.Button(label=tr("Open cover (PNG or JPEG)"))
         open_btn.connect("clicked", self.open_image)
         box.append(open_btn)
-        self.filename = Gtk.Label(label="Nessuna immagine selezionata", xalign=0)
+        self.filename = Gtk.Label(label=tr("No image selected"), xalign=0)
         box.append(self.filename)
         self.picture = Gtk.Picture()
         self.picture.set_size_request(-1, 220)
         self.picture.set_can_shrink(True)
         box.append(self.picture)
-        box.append(Gtk.Label(label="Formato custodia", xalign=0))
+        box.append(Gtk.Label(label=tr("Case format"), xalign=0))
         self.preset = Gtk.DropDown.new_from_strings(list(PRESETS))
         box.append(self.preset)
-        box.append(Gtk.Label(label="Adattamento immagine", xalign=0))
-        self.fit_mode = Gtk.DropDown.new_from_strings(["Adatta esattamente (senza tagli)", "Mantieni proporzioni (con margini)", "Riempi e ritaglia"])
+        box.append(Gtk.Label(label=tr("Image fitting"), xalign=0))
+        self.fit_mode = Gtk.DropDown.new_from_strings([tr("Fit exactly (no cropping)"), tr("Keep aspect ratio (with margins)"), tr("Fill and crop")])
         box.append(self.fit_mode)
-        self.marks = Gtk.CheckButton(label="Aggiungi segni di taglio")
+        self.marks = Gtk.CheckButton(label=tr("Add crop marks"))
         self.marks.set_active(True)
         box.append(self.marks)
-        self.status = Gtk.Label(label="Il PDF sarà su A4 orizzontale, in dimensioni reali.", xalign=0)
+        self.status = Gtk.Label(label=tr("The PDF will be A4 landscape at actual size."), xalign=0)
         self.status.set_wrap(True)
         box.append(self.status)
-        save_btn = Gtk.Button(label="Esporta PDF A4")
+        save_btn = Gtk.Button(label=tr("Export A4 PDF"))
         save_btn.add_css_class("suggested-action")
         save_btn.connect("clicked", self.save_pdf)
         box.append(save_btn)
         self.win.present()
 
     def open_image(self, *_):
-        dialog = Gtk.FileDialog(title="Seleziona una copertina")
+        dialog = Gtk.FileDialog(title=tr("Select a cover"))
         filt = Gtk.FileFilter()
-        filt.set_name("Immagini PNG e JPEG")
+        filt.set_name(tr("PNG and JPEG images"))
         for mime in ("image/png", "image/jpeg"):
             filt.add_mime_type(mime)
         filters = Gio.ListStore.new(Gtk.FileFilter)
@@ -123,15 +144,15 @@ class CoverPrint(Adw.Application):
             self.image_bytes = loader.get_pixbuf()
             self.filename.set_text(f.get_basename())
             self.picture.set_file(f)
-            self.status.set_text("Copertina caricata. Seleziona il formato ed esporta.")
+            self.status.set_text(tr("Cover loaded. Select a format and export."))
         except Exception as exc:
             self.status.set_text(f"Impossibile aprire l'immagine: {exc}")
 
     def save_pdf(self, *_):
         if self.image_bytes is None:
-            self.status.set_text("Prima seleziona una copertina.")
+            self.status.set_text(tr("Select a cover first."))
             return
-        dialog = Gtk.FileDialog(title="Salva PDF")
+        dialog = Gtk.FileDialog(title=tr("Save PDF"))
         dialog.set_initial_name("copertina.pdf")
         dialog.save(self.win, None, self.on_pdf_save)
 
@@ -141,9 +162,9 @@ class CoverPrint(Adw.Application):
             if not path.lower().endswith(".pdf"):
                 path += ".pdf"
             self.export(path)
-            self.status.set_text(f"PDF creato: {path}. Stampa al 100%, senza adattare alla pagina.")
+            self.status.set_text(tr("PDF created. Print at 100%, without fitting to page.") + f" ({path})")
         except Exception as exc:
-            self.status.set_text(f"Esportazione non riuscita: {exc}")
+            self.status.set_text(tr("Export failed: {error}").format(error=exc))
 
     def export(self, path):
         wmm, hmm = list(PRESETS.values())[self.preset.get_selected()]
