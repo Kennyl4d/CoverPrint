@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=CoverPrint
+Comment=Prepara copertine DVD e Blu-ray per la stampa
+Exec=coverprint
+Terminal=false
+Categories=Graphics;Publishing;
