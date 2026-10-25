@@ -13,6 +13,10 @@ jobs:
       options: --privileged
     steps:
       - uses: actions/checkout@v4
+      - name: Validate Python sources
+        run: python3 -m py_compile app/coverprint.py app/translations.py
+      - name: Validate AppStream metadata
+        run: appstreamcli validate --no-net app/io.github.kennyl4d.CoverPrint.metainfo.xml
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: CoverPrint.flatpak
