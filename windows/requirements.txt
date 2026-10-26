@@ -1,0 +1,4 @@
+PySide6>=6.8,<7
+Pillow>=11,<13
+reportlab>=4.2,<5
+pyinstaller>=6.10,<7
