@@ -1,0 +1,73 @@
+name: Build Windows
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'windows/**'
+      - 'app/translations.py'
+      - '.github/workflows/windows.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: windows/requirements.txt
+      - name: Install build dependencies
+        run: python -m pip install -r windows/requirements.txt
+      - name: Check Python syntax
+        run: python -m py_compile windows/coverprint_windows.py app/translations.py
+      - name: Build standalone Windows application
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean --windowed --onedir --name CoverPrint --add-data "app/translations.py;." windows/coverprint_windows.py
+          if (!(Test-Path dist/CoverPrint/CoverPrint.exe)) { throw "Executable missing" }
+      - name: Package portable ZIP
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release | Out-Null
+          Copy-Item LICENSE dist/CoverPrint/LICENSE
+          Compress-Archive -Path dist/CoverPrint -DestinationPath release/CoverPrint-1.1.0-Windows-Portable.zip -Force
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --yes --no-progress
+      - name: Build Windows installer
+        shell: pwsh
+        run: |
+          $compiler = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (!(Test-Path $compiler)) { throw "Inno Setup compiler not found: $compiler" }
+          & $compiler windows/installer.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (!(Test-Path release/CoverPrint-1.1.0-Windows-Setup.exe)) { throw "Installer missing" }
+      - name: Upload Windows packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: CoverPrint-1.1.0-Windows
+          path: |
+            release/CoverPrint-1.1.0-Windows-Portable.zip
+            release/CoverPrint-1.1.0-Windows-Setup.exe
+          if-no-files-found: error
+
+  release:
+    needs: windows
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: CoverPrint-1.1.0-Windows
+          path: windows-release
+      - name: Attach Windows packages to existing v1.1.0 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release view v1.1.0 --repo "$GH_REPO"
+          gh release upload v1.1.0 windows-release/CoverPrint-1.1.0-Windows-Portable.zip windows-release/CoverPrint-1.1.0-Windows-Setup.exe --repo "$GH_REPO" --clobber
