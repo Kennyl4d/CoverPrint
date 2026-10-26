@@ -2,11 +2,12 @@
 
 <p align="center"><img width="112" height="112" alt="CoverPrint" src="app/io.github.kennyl4d.CoverPrint.svg" /></p>
 
-<p align="center"><strong>A lightweight DVD and Blu-ray cover printing tool for Linux.</strong><br>Prepare print-ready covers at accurate physical dimensions with a clean GNOME interface.</p>
+<p align="center"><strong>A lightweight DVD and Blu-ray cover printing tool for Linux and Windows.</strong><br>Prepare print-ready covers at accurate physical dimensions with a clean GNOME interface.</p>
 
 <p align="center">
 <a href="../../releases"><img alt="Download for Linux" src="https://img.shields.io/badge/Download-Linux-0078D4?style=flat-square"></a>
 <a href="../../actions/workflows/flatpak.yml"><img alt="Flatpak build" src="https://github.com/Kennyl4d/CoverPrint/actions/workflows/flatpak.yml/badge.svg?branch=main"></a>
+<a href="../../actions/workflows/windows.yml"><img alt="Windows build" src="https://github.com/Kennyl4d/CoverPrint/actions/workflows/windows.yml/badge.svg?branch=main"></a>
 <a href="LICENSE"><img alt="License: GPL v3.0" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
 </p>
 
@@ -18,7 +19,9 @@ CoverPrint converts existing PNG and JPEG cover artwork into A4 landscape PDFs f
 
 ## Downloads
 
-Download `CoverPrint.flatpak` from the [Releases page](../../releases), or use a successful [GitHub Actions build](../../actions/workflows/flatpak.yml).
+**Linux:** Download `CoverPrint.flatpak` from the [Releases page](../../releases), or use a successful [GitHub Actions build](../../actions/workflows/flatpak.yml).
+
+**Windows:** Download `CoverPrint-1.1.0-Windows-Portable.zip` (extract and launch `CoverPrint.exe`) or `CoverPrint-1.1.0-Windows-Setup.exe` (installer) from the same [Releases page](../../releases). The Windows packages are built by [GitHub Actions](../../actions/workflows/windows.yml).
 
 Install with a Flatpak-compatible software manager, or run:
 
@@ -26,7 +29,7 @@ Install with a Flatpak-compatible software manager, or run:
 flatpak install --user ./CoverPrint.flatpak
 ```
 
-Requires Flatpak and the GNOME 51 runtime.
+The Linux edition requires Flatpak and the GNOME 51 runtime. The Windows edition includes its Python and Qt runtime and does not require Python to be installed.
 
 ## Features
 
@@ -34,7 +37,7 @@ Requires Flatpak and the GNOME 51 runtime.
 - Exact fit, preserve aspect ratio, and fill-and-crop modes.
 - Optional crop marks and A4 landscape PDF export.
 - Light, dark, and system appearance settings.
-- Native GTK 4 and libadwaita interface.
+- Native GTK 4 and libadwaita interface on Linux; Qt interface on Windows.
 - Automatic language detection; English fallback.
 - Offline image processing.
 
@@ -62,7 +65,7 @@ Export the cover as an A4 landscape PDF. Print at **100% / actual size**, with f
 
 ## Source code and builds
 
-CoverPrint is written in Python with GTK 4, libadwaita, GdkPixbuf, and Cairo. GitHub Actions builds the Flatpak from [the manifest](io.github.kennyl4d.CoverPrint.yml). Application sources are in [app](app).
+CoverPrint is written in Python. The Linux edition uses GTK 4, libadwaita, GdkPixbuf, and Cairo; the Windows edition uses Qt (PySide6), Pillow, and ReportLab. GitHub Actions builds the Flatpak from [the manifest](io.github.kennyl4d.CoverPrint.yml) and the Windows portable ZIP and installer from [windows](windows). Application sources are in [app](app) and [windows](windows).
 
 ## Feedback
 
