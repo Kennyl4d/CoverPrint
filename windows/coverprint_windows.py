@@ -13,7 +13,7 @@ from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QAction, QIcon, QPalette, QColor, QPixmap, QPainter, QPen
 from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QFileDialog, QHBoxLayout, QLabel,
-    QMainWindow, QMenu, QMessageBox, QPushButton, QScrollArea, QVBoxLayout,
+    QMainWindow, QMenu, QMessageBox, QPushButton, QListView, QAbstractItemView, QScrollArea, QVBoxLayout,
     QWidget, QStyleFactory,
 )
 
@@ -222,10 +222,14 @@ class CoverPrintWindow(QMainWindow):
 
         layout.addWidget(QLabel(tr("Case format")))
         self.preset = ModernComboBox()
+        self.preset.setView(QListView())
+        self.preset.view().setMouseTracking(True)
         self.preset.addItems(PRESETS)
         layout.addWidget(self.preset)
         layout.addWidget(QLabel(tr("Image fitting")))
         self.fit_mode = ModernComboBox()
+        self.fit_mode.setView(QListView())
+        self.fit_mode.view().setMouseTracking(True)
         self.fit_mode.addItems([tr("Fit exactly (no cropping)"), tr("Keep aspect ratio (with margins)"), tr("Fill and crop")])
         layout.addWidget(self.fit_mode)
         self.marks = VisibleCheckBox(tr("Add crop marks"))
@@ -316,8 +320,24 @@ class CoverPrintWindow(QMainWindow):
                 background-color: {field};
                 color: {fg};
                 border: 1px solid {border};
-                selection-background-color: #397f56;
-                selection-color: #ffffff;
+                outline: 0;
+                selection-background-color: {hover};
+                selection-color: {fg};
+            }}
+            QComboBox QListView::item {{
+                background-color: {field};
+                color: {fg};
+                border: none;
+                outline: none;
+                padding: 7px 10px;
+                min-height: 23px;
+            }}
+            QComboBox QListView::item:hover,
+            QComboBox QListView::item:selected {{
+                background-color: {hover};
+                color: {fg};
+                border: none;
+                outline: none;
             }}
             QCheckBox {{ color: {fg}; spacing: 8px; }}
             QCheckBox::indicator {{
