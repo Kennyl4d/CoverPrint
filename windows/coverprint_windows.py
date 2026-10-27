@@ -230,17 +230,6 @@ class CoverPrintWindow(QMainWindow):
                 selection-color: #ffffff;
             }}
             QCheckBox {{ color: {fg}; spacing: 8px; }}
-            QCheckBox::indicator {{
-                width: 17px;
-                height: 17px;
-                border: 1px solid {border};
-                border-radius: 3px;
-                background-color: {field};
-            }}
-            QCheckBox::indicator:checked {{
-                background-color: #397f56;
-                border: 1px solid #397f56;
-            }}
         """)
         if save:
             self.settings.setValue("theme", self.theme_choice)
