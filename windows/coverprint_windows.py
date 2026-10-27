@@ -10,7 +10,7 @@ from PIL import Image, ImageOps
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 from PySide6.QtCore import Qt, QSettings
-from PySide6.QtGui import QAction, QIcon, QPalette, QColor, QPixmap
+from PySide6.QtGui import QAction, QIcon, QPalette, QColor, QPixmap, QPainter, QPen
 from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QFileDialog, QHBoxLayout, QLabel,
     QMainWindow, QMenu, QMessageBox, QPushButton, QScrollArea, QVBoxLayout,
@@ -95,6 +95,50 @@ def export_pdf(image_path, output_path, size, fit_mode, crop_marks):
         pdf.showPage()
         pdf.save()
 
+
+class ModernComboBox(QComboBox):
+    """Paint a crisp chevron instead of the platform's small arrow glyph."""
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        color = self.palette().color(QPalette.ColorRole.ButtonText)
+        if not self.isEnabled():
+            color.setAlpha(100)
+        pen = QPen(color, 1.8)
+        pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+        pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+        painter.setPen(pen)
+        cx, cy = self.width() - 18, self.height() / 2
+        from PySide6.QtCore import QPointF
+        painter.drawLine(QPointF(cx - 4, cy - 2), QPointF(cx, cy + 2))
+        painter.drawLine(QPointF(cx, cy + 2), QPointF(cx + 4, cy - 2))
+        painter.end()
+
+
+class VisibleCheckBox(QCheckBox):
+    """Render an unambiguous tick on top of the styled checkbox indicator."""
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        if not self.isChecked():
+            return
+        from PySide6.QtWidgets import QStyle, QStyleOptionButton
+        from PySide6.QtCore import QPointF
+        option = QStyleOptionButton()
+        self.initStyleOption(option)
+        rect = self.style().subElementRect(QStyle.SubElement.SE_CheckBoxIndicator, option, self)
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        pen = QPen(QColor("#ffffff"), 2.2)
+        pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+        pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+        painter.setPen(pen)
+        cx, cy = rect.center().x(), rect.center().y()
+        painter.drawLine(QPointF(cx - 5, cy), QPointF(cx - 1.5, cy + 3.5))
+        painter.drawLine(QPointF(cx - 1.5, cy + 3.5), QPointF(cx + 5.5, cy - 4))
+        painter.end()
+
+
 class CoverPrintWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -143,14 +187,14 @@ class CoverPrintWindow(QMainWindow):
         layout.addWidget(self.picture, 1)
 
         layout.addWidget(QLabel(tr("Case format")))
-        self.preset = QComboBox()
+        self.preset = ModernComboBox()
         self.preset.addItems(PRESETS)
         layout.addWidget(self.preset)
         layout.addWidget(QLabel(tr("Image fitting")))
-        self.fit_mode = QComboBox()
+        self.fit_mode = ModernComboBox()
         self.fit_mode.addItems([tr("Fit exactly (no cropping)"), tr("Keep aspect ratio (with margins)"), tr("Fill and crop")])
         layout.addWidget(self.fit_mode)
-        self.marks = QCheckBox(tr("Add crop marks"))
+        self.marks = VisibleCheckBox(tr("Add crop marks"))
         self.marks.setChecked(True)
         layout.addWidget(self.marks)
         self.status = QLabel(tr("The PDF will be A4 landscape at actual size."))
@@ -222,6 +266,18 @@ class CoverPrintWindow(QMainWindow):
                 min-height: 22px;
             }}
             QPushButton:hover, QComboBox:hover {{ background-color: {hover}; }}
+            QComboBox::drop-down {{
+                subcontrol-origin: padding;
+                subcontrol-position: top right;
+                width: 36px;
+                border: none;
+                background: transparent;
+            }}
+            QComboBox::down-arrow {{
+                image: none;
+                width: 0px;
+                height: 0px;
+            }}
             QComboBox QAbstractItemView {{
                 background-color: {field};
                 color: {fg};
@@ -230,6 +286,17 @@ class CoverPrintWindow(QMainWindow):
                 selection-color: #ffffff;
             }}
             QCheckBox {{ color: {fg}; spacing: 8px; }}
+            QCheckBox::indicator {{
+                width: 18px;
+                height: 18px;
+                border: 1.5px solid {border};
+                border-radius: 5px;
+                background-color: {field};
+            }}
+            QCheckBox::indicator:checked {{
+                border: 1.5px solid #397f56;
+                background-color: #397f56;
+            }}
         """)
         if save:
             self.settings.setValue("theme", self.theme_choice)
