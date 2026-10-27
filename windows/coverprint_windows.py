@@ -40,9 +40,43 @@ def load_translations():
 TRANSLATIONS = load_translations()
 
 def system_language():
-    raw = os.environ.get("LANGUAGE", "").split(":")[0] or os.environ.get("LC_ALL") or os.environ.get("LC_MESSAGES")
+    # Windows has its own per-user display language preferences. Python's
+    # locale.getlocale() may report the regional format rather than the UI
+    # language (or fall back to en_US in frozen applications).
+    raw = ""
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            from ctypes import wintypes
+            kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+            get_languages = kernel32.GetUserPreferredUILanguages
+            get_languages.argtypes = [
+                wintypes.DWORD, ctypes.POINTER(wintypes.ULONG),
+                wintypes.LPWSTR, ctypes.POINTER(wintypes.ULONG),
+            ]
+            get_languages.restype = wintypes.BOOL
+            count = wintypes.ULONG(0)
+            length = wintypes.ULONG(0)
+            # MUI_LANGUAGE_NAME = 0x8: return BCP-47 names, ordered by preference.
+            if get_languages(0x8, ctypes.byref(count), None, ctypes.byref(length)) and length.value:
+                buffer = ctypes.create_unicode_buffer(length.value)
+                if get_languages(0x8, ctypes.byref(count), buffer, ctypes.byref(length)):
+                    raw = buffer.value
+        except (OSError, AttributeError, ValueError):
+            pass
+        if not raw:
+            try:
+                buffer = ctypes.create_unicode_buffer(85)
+                if ctypes.windll.kernel32.GetUserDefaultLocaleName(buffer, len(buffer)):
+                    raw = buffer.value
+            except (OSError, AttributeError, ValueError, NameError):
+                pass
     if not raw:
-        raw = locale.getlocale()[0] or "en"
+        raw = (os.environ.get("LANGUAGE", "").split(":")[0]
+               or os.environ.get("LC_ALL")
+               or os.environ.get("LC_MESSAGES")
+               or locale.getlocale()[0]
+               or "en")
     code = raw.split(".")[0].replace("-", "_").lower()
     if code.startswith("zh"):
         return "zh_TW" if any(p in code for p in ("tw", "hk", "hant")) else "zh_CN"
