@@ -71,3 +71,13 @@ jobs:
         run: |
           gh release view v1.1.0 --repo "$GH_REPO"
           gh release upload v1.1.0 windows-release/CoverPrint-1.1.0-Windows-Portable.zip windows-release/CoverPrint-1.1.0-Windows-Setup.exe --repo "$GH_REPO" --clobber
+      - name: Update v1.1.0 release notes with Windows support
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release view v1.1.0 --repo "$GH_REPO" --json body --jq .body > release-notes.md
+          if ! grep -Fq 'Windows 10/11 (64-bit)' release-notes.md; then
+            printf '\n\n### Windows support\nCoverPrint 1.1.0 is now available for Windows 10/11 (64-bit), alongside the Linux Flatpak. Download either the portable ZIP (extract and run CoverPrint.exe) or the Windows Setup installer. Both provide the same DVD/Blu-ray case presets, image fitting options, crop marks, A4 PDF export, languages, and light/dark/system themes.\n' >> release-notes.md
+            gh release edit v1.1.0 --repo "$GH_REPO" --notes-file release-notes.md
+          fi
