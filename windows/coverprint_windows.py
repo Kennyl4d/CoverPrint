@@ -14,7 +14,7 @@ from PySide6.QtGui import QAction, QIcon, QPalette, QColor, QPixmap
 from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QFileDialog, QHBoxLayout, QLabel,
     QMainWindow, QMenu, QMessageBox, QPushButton, QScrollArea, QVBoxLayout,
-    QWidget,
+    QWidget, QStyleFactory,
 )
 
 VERSION = "1.1.0"
@@ -161,33 +161,97 @@ class CoverPrintWindow(QMainWindow):
         layout.addWidget(save_btn)
         self.apply_theme(self.settings.value("theme", "system"), save=False)
 
+    def windows_prefers_dark(self):
+        """Read the Windows 10/11 *app* theme, not the taskbar theme."""
+        if sys.platform == "win32":
+            try:
+                import winreg
+                key = r"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+                with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key) as handle:
+                    return winreg.QueryValueEx(handle, "AppsUseLightTheme")[0] == 0
+            except (OSError, ValueError):
+                pass
+        return QApplication.instance().styleHints().colorScheme() == Qt.ColorScheme.Dark
+
     def apply_theme(self, value, save=True):
         app = QApplication.instance()
-        if value == "system":
-            app.setPalette(app.style().standardPalette())
-        elif value == "dark":
-            palette = QPalette()
-            palette.setColor(QPalette.ColorRole.Window, QColor("#222226"))
-            palette.setColor(QPalette.ColorRole.WindowText, QColor("#f6f6f6"))
-            palette.setColor(QPalette.ColorRole.Base, QColor("#303034"))
-            palette.setColor(QPalette.ColorRole.AlternateBase, QColor("#38383c"))
-            palette.setColor(QPalette.ColorRole.Text, QColor("#f6f6f6"))
-            palette.setColor(QPalette.ColorRole.Button, QColor("#38383c"))
-            palette.setColor(QPalette.ColorRole.ButtonText, QColor("#f6f6f6"))
-            palette.setColor(QPalette.ColorRole.Highlight, QColor("#35884a"))
-            palette.setColor(QPalette.ColorRole.HighlightedText, QColor("#ffffff"))
-            app.setPalette(palette)
+        self.theme_choice = value if value in ("system", "light", "dark") else "system"
+        dark = self.windows_prefers_dark() if self.theme_choice == "system" else self.theme_choice == "dark"
+        self._last_system_dark = dark if self.theme_choice == "system" else None
+        # Fusion respects QPalette for controls, including drop-downs and checkboxes.
+        app.setStyle(QStyleFactory.create("Fusion"))
+        palette = QPalette()
+        if dark:
+            colors = {
+                "Window": "#242428", "WindowText": "#f1f1f2",
+                "Base": "#303035", "AlternateBase": "#38383d",
+                "Text": "#f1f1f2", "Button": "#39393e",
+                "ButtonText": "#f1f1f2", "Highlight": "#438e61",
+                "HighlightedText": "#ffffff", "ToolTipBase": "#303035",
+                "ToolTipText": "#f1f1f2", "PlaceholderText": "#b4b4ba",
+                "Light": "#55555b", "Midlight": "#45454a",
+                "Mid": "#66666d", "Dark": "#171719", "Shadow": "#101012",
+                "BrightText": "#ffffff", "Link": "#8bc7a2",
+            }
+            border, field, hover, fg = "#77777f", "#303035", "#45454b", "#f1f1f2"
         else:
-            palette = QPalette()
-            palette.setColor(QPalette.ColorRole.Window, QColor("#f6f6f6"))
-            palette.setColor(QPalette.ColorRole.WindowText, QColor("#202020"))
-            palette.setColor(QPalette.ColorRole.Base, QColor("#ffffff"))
-            palette.setColor(QPalette.ColorRole.Text, QColor("#202020"))
-            palette.setColor(QPalette.ColorRole.Button, QColor("#ededed"))
-            palette.setColor(QPalette.ColorRole.ButtonText, QColor("#202020"))
-            app.setPalette(palette)
+            # A soft light theme with visible field borders (not pure white).
+            colors = {
+                "Window": "#e9e9ed", "WindowText": "#242428",
+                "Base": "#f7f7f9", "AlternateBase": "#ececf0",
+                "Text": "#242428", "Button": "#dedee4",
+                "ButtonText": "#242428", "Highlight": "#397f56",
+                "HighlightedText": "#ffffff", "ToolTipBase": "#f7f7f9",
+                "ToolTipText": "#242428", "PlaceholderText": "#686872",
+                "Light": "#ffffff", "Midlight": "#ededf0",
+                "Mid": "#a0a0aa", "Dark": "#777782", "Shadow": "#565660",
+                "BrightText": "#000000", "Link": "#25693e",
+            }
+            border, field, hover, fg = "#888893", "#f7f7f9", "#d4d4dc", "#242428"
+        for role, color in colors.items():
+            palette.setColor(getattr(QPalette.ColorRole, role), QColor(color))
+        app.setPalette(palette)
+        # Explicit borders keep controls distinguishable on Windows 10 and 11.
+        app.setStyleSheet(f"""
+            QComboBox, QPushButton {{
+                border: 1px solid {border};
+                border-radius: 6px;
+                padding: 6px 10px;
+                background-color: {field};
+                color: {fg};
+                min-height: 22px;
+            }}
+            QPushButton:hover, QComboBox:hover {{ background-color: {hover}; }}
+            QComboBox QAbstractItemView {{
+                background-color: {field};
+                color: {fg};
+                border: 1px solid {border};
+                selection-background-color: #397f56;
+                selection-color: #ffffff;
+            }}
+            QCheckBox {{ color: {fg}; spacing: 8px; }}
+            QCheckBox::indicator {{
+                width: 17px;
+                height: 17px;
+                border: 1px solid {border};
+                border-radius: 3px;
+                background-color: {field};
+            }}
+            QCheckBox::indicator:checked {{
+                background-color: #397f56;
+                border: 1px solid #397f56;
+            }}
+        """)
         if save:
-            self.settings.setValue("theme", value)
+            self.settings.setValue("theme", self.theme_choice)
+
+    def focusInEvent(self, event):
+        super().focusInEvent(event)
+        if getattr(self, "theme_choice", None) == "system":
+            dark = self.windows_prefers_dark()
+            if dark != getattr(self, "_last_system_dark", None):
+                self._last_system_dark = dark
+                self.apply_theme("system", save=False)
 
     def show_about(self):
         QMessageBox.about(
