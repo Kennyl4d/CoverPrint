@@ -1,0 +1,65 @@
+name: Verify and release CoverPrint
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: coverprint-release
+  cancel-in-progress: false
+
+jobs:
+  linux-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-gi python3-gi-cairo python3-cairo gir1.2-gtk-4.0 gir1.2-adw-1 python3-pypdf xvfb dbus-x11
+      - name: Compile settings and run regression tests
+        run: |
+          glib-compile-schemas --strict app
+          /usr/bin/python3 -m unittest discover -s tests -p test_translations.py -v
+          xvfb-run -a dbus-run-session -- /usr/bin/python3 -m unittest discover -s tests -p test_linux.py -v
+  linux:
+    needs: linux-tests
+    uses: ./.github/workflows/flatpak.yml
+  windows:
+    uses: ./.github/workflows/windows.yml
+  release:
+    needs: [linux, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: '*1.2.0*'
+          merge-multiple: true
+          path: packages
+      - name: Publish verified Linux and Windows packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test -s packages/CoverPrint.flatpak
+          test -s packages/CoverPrint-1.2.0-Windows-Portable.zip
+          test -s packages/CoverPrint-1.2.0-Windows-Setup.exe
+          CURRENT_HEAD="$(gh api "repos/$GH_REPO/commits/main" --jq .sha)"
+          if [ "$CURRENT_HEAD" != "$GITHUB_SHA" ]; then
+            echo "::error::Main advanced while building. Run the workflow for its current head."
+            exit 1
+          fi
+          cd packages
+          sha256sum CoverPrint.flatpak CoverPrint-1.2.0-Windows-Portable.zip CoverPrint-1.2.0-Windows-Setup.exe > SHA256SUMS
+          if gh release view v1.2.0 >/dev/null 2>&1; then
+            TAG_SHA="$(gh api "repos/$GH_REPO/commits/v1.2.0" --jq .sha)"
+            test "$TAG_SHA" = "$GITHUB_SHA"
+          else
+            gh release create v1.2.0 --draft --target "$GITHUB_SHA" --title "CoverPrint 1.2.0" --notes "Linux and Windows. Fully localized About dialog in all 14 supported languages with English fallback. Remembered case format, image fitting and crop marks. Responsive background PDF export with an indeterminate activity indicator and atomic saving. Full-resolution image processing, direct embedding of eligible JPEGs on Windows and reusable Cairo source images on Linux."
+          fi
+          gh release upload v1.2.0 CoverPrint.flatpak CoverPrint-1.2.0-Windows-Portable.zip CoverPrint-1.2.0-Windows-Setup.exe SHA256SUMS --clobber
+          gh release edit v1.2.0 --draft=false --latest

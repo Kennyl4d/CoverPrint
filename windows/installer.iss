@@ -1,5 +1,5 @@
 #define MyAppName "CoverPrint"
-#define MyAppVersion "1.1.0"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "Kennyl4d"
 #define MyAppExeName "CoverPrint.exe"
 
@@ -12,7 +12,7 @@ DefaultDirName={localappdata}\Programs\CoverPrint
 DefaultGroupName=CoverPrint
 DisableProgramGroupPage=yes
 OutputDir=..\release
-OutputBaseFilename=CoverPrint-1.1.0-Windows-Setup
+OutputBaseFilename=CoverPrint-1.2.0-Windows-Setup
 Compression=lzma2
 SolidCompression=yes
 PrivilegesRequired=lowest

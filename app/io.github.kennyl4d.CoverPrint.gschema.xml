@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="io.github.kennyl4d.CoverPrint" path="/io/github/kennyl4d/CoverPrint/">
+    <key name="case-format" type="s">
+      <default>'DVD standard (273 × 183 mm)'</default>
+      <summary>Last selected case format</summary>
+    </key>
+    <key name="image-fitting" type="s">
+      <default>'exact'</default>
+      <summary>Last image fitting mode</summary>
+      <description>exact, contain or cover</description>
+    </key>
+    <key name="crop-marks" type="b">
+      <default>true</default>
+      <summary>Include crop marks</summary>
+    </key>
     <key name="theme" type="s">
       <default>'system'</default>
       <summary>Appearance preference</summary>

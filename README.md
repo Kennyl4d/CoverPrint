@@ -21,7 +21,7 @@ CoverPrint converts existing PNG and JPEG cover artwork into A4 landscape PDFs f
 
 **Linux:** Download `CoverPrint.flatpak` from the [Releases page](../../releases), or use a successful [GitHub Actions build](../../actions/workflows/flatpak.yml).
 
-**Windows:** Download `CoverPrint-1.1.0-Windows-Portable.zip` (extract and launch `CoverPrint.exe`) or `CoverPrint-1.1.0-Windows-Setup.exe` (installer) from the same [Releases page](../../releases). The Windows packages are built by [GitHub Actions](../../actions/workflows/windows.yml).
+**Windows:** Download `CoverPrint-1.2.0-Windows-Portable.zip` (extract and launch `CoverPrint.exe`) or `CoverPrint-1.2.0-Windows-Setup.exe` (installer) from the same [Releases page](../../releases). The Windows packages are built by [GitHub Actions](../../actions/workflows/windows.yml).
 
 Install with a Flatpak-compatible software manager, or run:
 
@@ -36,6 +36,9 @@ The Linux edition requires Flatpak and the GNOME 51 runtime. The Windows edition
 - Accurate DVD and Blu-ray cover size presets.
 - Exact fit, preserve aspect ratio, and fill-and-crop modes.
 - Optional crop marks and A4 landscape PDF export.
+- Remembered case format, image fitting and crop marks between launches.
+- Background PDF export with an activity indicator and safe replacement of completed files.
+- Localized About dialog in all 14 supported languages.
 - Light, dark, and system appearance settings.
 - Native GTK 4 and libadwaita interface on Linux; Qt interface on Windows.
 - Automatic language detection; English fallback.

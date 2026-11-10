@@ -5,19 +5,20 @@ import locale
 import os
 import sys
 from pathlib import Path
+import tempfile
 
 from PIL import Image, ImageOps
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, QThread, Signal
 from PySide6.QtGui import QAction, QIcon, QPalette, QColor, QPixmap, QPainter, QPen
 from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QFileDialog, QHBoxLayout, QLabel,
     QMainWindow, QMenu, QMessageBox, QPushButton, QListView, QAbstractItemView, QScrollArea, QVBoxLayout,
-    QWidget, QStyleFactory,
+    QWidget, QStyleFactory, QProgressBar,
 )
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 MM_TO_PT = 72.0 / 25.4
 PRESETS = {
     "DVD standard (273 × 183 mm)": (273, 183),
@@ -32,12 +33,16 @@ def resource_path(name):
 
 def load_translations():
     path = resource_path("translations.py")
+    if not path.exists() and not hasattr(sys, "_MEIPASS"):
+        path = Path(__file__).resolve().parents[1] / "app" / "translations.py"
     spec = importlib.util.spec_from_file_location("coverprint_translations", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module.TRANSLATIONS
 
 TRANSLATIONS = load_translations()
+ABOUT_DESCRIPTION = "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing."
+ABOUT_LICENSE = "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms."
 
 def system_language():
     # Windows has its own per-user display language preferences. Python's
@@ -96,7 +101,9 @@ def export_pdf(image_path, output_path, size, fit_mode, crop_marks):
     x, y = (pw - w) / 2, (ph - h) / 2
     with Image.open(image_path) as original:
         # Respect JPEG EXIF orientation; normalize modes for PDF.
-        img = ImageOps.exif_transpose(original).convert("RGB")
+        direct_jpeg = (original.format == "JPEG" and original.mode in ("RGB", "L")
+                       and original.getexif().get(274, 1) == 1)
+        img = original if direct_jpeg else ImageOps.exif_transpose(original).convert("RGB")
         iw, ih = img.size
         if not iw or not ih:
             raise ValueError("Invalid image dimensions")
@@ -114,7 +121,10 @@ def export_pdf(image_path, output_path, size, fit_mode, crop_marks):
         clip = pdf.beginPath()
         clip.rect(x, y, w, h)
         pdf.clipPath(clip, stroke=0, fill=0)
-        pdf.drawImage(ImageReader(img), dx, dy, dw, dh)
+        # Keep eligible JPEG bytes intact, avoiding the RGB copy and lossless
+        # re-encoding. All other inputs retain the full-resolution RGB path.
+        reader = ImageReader(image_path) if direct_jpeg else ImageReader(img)
+        pdf.drawImage(reader, dx, dy, dw, dh)
         pdf.restoreState()
         if crop_marks:
             pdf.setStrokeColorRGB(0, 0, 0)
@@ -128,6 +138,34 @@ def export_pdf(image_path, output_path, size, fit_mode, crop_marks):
                     pdf.line(cx, cy + sy * gap, cx, cy + sy * (gap + length))
         pdf.showPage()
         pdf.save()
+
+
+class ExportWorker(QThread):
+    completed = Signal(str, str)
+
+    def __init__(self, path, image_path, size, fit_mode, crop_marks, parent):
+        super().__init__(parent)
+        self.path = path
+        self.arguments = (image_path, size, fit_mode, crop_marks)
+
+    def run(self):
+        temporary = None
+        try:
+            # Replace only a completed PDF, preserving an existing destination
+            # if rendering fails.
+            with tempfile.NamedTemporaryFile(dir=Path(self.path).parent,
+                                             suffix=".pdf", delete=False) as handle:
+                temporary = handle.name
+            image_path, size, fit_mode, marks = self.arguments
+            export_pdf(image_path, temporary, size, fit_mode, marks)
+            os.replace(temporary, self.path)
+            temporary = None
+            self.completed.emit(self.path, "")
+        except Exception as exc:
+            self.completed.emit(self.path, str(exc))
+        finally:
+            if temporary is not None:
+                Path(temporary).unlink(missing_ok=True)
 
 
 class ModernComboBox(QComboBox):
@@ -233,14 +271,30 @@ class CoverPrintWindow(QMainWindow):
         self.fit_mode.addItems([tr("Fit exactly (no cropping)"), tr("Keep aspect ratio (with margins)"), tr("Fill and crop")])
         layout.addWidget(self.fit_mode)
         self.marks = VisibleCheckBox(tr("Add crop marks"))
-        self.marks.setChecked(True)
+        preset = self.settings.value("case-format", next(iter(PRESETS)))
+        self.preset.setCurrentIndex(list(PRESETS).index(preset) if preset in PRESETS else 0)
+        fitting = self.settings.value("image-fitting", "exact")
+        modes = ("exact", "contain", "cover")
+        self.fit_mode.setCurrentIndex(modes.index(fitting) if fitting in modes else 0)
+        self.marks.setChecked(str(self.settings.value("crop-marks", "true")).lower() == "true")
+        self.preset.currentIndexChanged.connect(self.save_preferences)
+        self.fit_mode.currentIndexChanged.connect(self.save_preferences)
+        self.marks.toggled.connect(self.save_preferences)
         layout.addWidget(self.marks)
         self.status = QLabel(tr("The PDF will be A4 landscape at actual size."))
         self.status.setWordWrap(True)
         layout.addWidget(self.status)
+        self.progress = QProgressBar()
+        self.progress.setRange(0, 0)
+        self.progress.setTextVisible(False)
+        self.progress.setAccessibleName(tr("Exporting PDF…"))
+        self.progress.hide()
+        layout.addWidget(self.progress)
         save_btn = QPushButton(tr("Export A4 PDF"))
         save_btn.clicked.connect(self.save_pdf)
         layout.addWidget(save_btn)
+        self.export_controls = (open_btn, self.preset, self.fit_mode, self.marks, save_btn)
+        self.worker = None
         self.apply_theme(self.settings.value("theme", "system"), save=False)
 
     def windows_prefers_dark(self):
@@ -363,14 +417,22 @@ class CoverPrintWindow(QMainWindow):
                 self._last_system_dark = dark
                 self.apply_theme("system", save=False)
 
+    def save_preferences(self, *_):
+        self.settings.setValue("case-format", list(PRESETS)[self.preset.currentIndex()])
+        self.settings.setValue("image-fitting", ("exact", "contain", "cover")[self.fit_mode.currentIndex()])
+        self.settings.setValue("crop-marks", self.marks.isChecked())
+        self.settings.sync()
+
     def show_about(self):
-        QMessageBox.about(
-            self, tr("About CoverPrint"),
-            "CoverPrint " + VERSION + "\nKennyl4d\n\n"
-            "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.\n\n"
-            "GPL-3.0-only. This program comes with absolutely no warranty.\n"
-            "https://github.com/Kennyl4d/CoverPrint",
-        )
+        dialog = QMessageBox(self)
+        dialog.setWindowTitle(tr("About CoverPrint"))
+        dialog.setTextFormat(Qt.TextFormat.PlainText)
+        dialog.setText("CoverPrint\n" + tr("Version") + " " + VERSION + "\n"
+                       + tr("Developer") + " Kennyl4d\n\n"
+                       + tr(ABOUT_DESCRIPTION) + "\n\n" + tr(ABOUT_LICENSE)
+                       + "\n\nhttps://github.com/Kennyl4d/CoverPrint")
+        dialog.addButton(tr("Close"), QMessageBox.ButtonRole.AcceptRole)
+        dialog.exec()
 
     def open_image(self):
         path, _ = QFileDialog.getOpenFileName(self, tr("Select a cover"), "", "PNG and JPEG (*.png *.jpg *.jpeg)")
@@ -398,11 +460,40 @@ class CoverPrintWindow(QMainWindow):
             return
         if not path.lower().endswith(".pdf"):
             path += ".pdf"
-        try:
-            export_pdf(self.image_path, path, list(PRESETS.values())[self.preset.currentIndex()], self.fit_mode.currentIndex(), self.marks.isChecked())
-            self.status.setText(tr("PDF created. Print at 100%, without fitting to page.") + " (" + path + ")")
-        except Exception as exc:
-            self.status.setText(tr("Export failed: {error}").format(error=exc))
+        if self.worker is not None:
+            return
+        self.status.setText(tr("Exporting PDF…"))
+        for control in self.export_controls:
+            control.setEnabled(False)
+        self.progress.show()
+        self.worker = ExportWorker(path, self.image_path,
+                                   list(PRESETS.values())[self.preset.currentIndex()],
+                                   self.fit_mode.currentIndex(), self.marks.isChecked(), self)
+        self.worker.completed.connect(self.export_completed)
+        self.worker.finished.connect(self.export_finished)
+        self.worker.start()
+
+    def export_completed(self, path, error):
+        if error:
+            self.status.setText(tr("Export failed: {error}").format(error=error))
+        else:
+            self.status.setText(tr("PDF created. Print at 100%, without fitting to page.")
+                                + " (" + path + ")")
+
+    def export_finished(self):
+        self.worker.deleteLater()
+        self.worker = None
+        self.progress.hide()
+        for control in self.export_controls:
+            control.setEnabled(True)
+
+    def closeEvent(self, event):
+        # Keep the worker and its parent alive until the atomic save finishes.
+        if self.worker is not None:
+            event.ignore()
+        else:
+            super().closeEvent(event)
+
 
 def main():
     app = QApplication(sys.argv)

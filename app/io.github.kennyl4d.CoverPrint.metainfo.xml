@@ -34,6 +34,9 @@
   <content_rating type="oars-1.1"/>
   <launchable type="desktop-id">io.github.kennyl4d.CoverPrint.desktop</launchable>
   <releases>
+    <release version="1.2.0" date="2026-11-10">
+      <description><p>Localized About dialogs, remembered print options, responsive PDF export and lossless export optimizations on Linux and Windows.</p></description>
+    </release>
     <release version="1.1.0" date="2026-10-25">
       <description><p>Updated to GNOME 51 and improved app-store metadata.</p></description>
     </release>

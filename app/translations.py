@@ -1,6 +1,12 @@
 # CoverPrint translations. English is the source language.
 TRANSLATIONS = {
   "it": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "Prepara copertine DVD e Blu-ray nelle dimensioni fisiche corrette per la stampa su A4.",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint è distribuito con licenza GNU General Public License, esclusivamente versione 3 (GPL-3.0-only).\n\nQuesto programma viene fornito senza alcuna garanzia, nei limiti consentiti dalla legge applicabile.\n\nConsulta il file LICENSE nella repository del codice sorgente per i termini completi della licenza.",
+    "Version": "Versione",
+    "Developer": "Sviluppatore",
+    "Close": "Chiudi",
+    "Exporting PDF…": "Esportazione PDF in corso…",
     "Print-ready covers": "Copertine pronte da stampare",
     "Open cover (PNG or JPEG)": "Apri copertina (PNG o JPEG)",
     "No image selected": "Nessuna immagine selezionata",
@@ -28,6 +34,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "Esportazione non riuscita: {error}"
   },
   "cs": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "Připravujte obaly DVD a Blu-ray v přesných fyzických rozměrech pro tisk na A4.",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint je licencován pod GNU General Public License, pouze verze 3 (GPL-3.0-only).\n\nTento program je poskytován bez jakékoli záruky v rozsahu povoleném platnými právními předpisy.\n\nÚplné licenční podmínky najdete v souboru LICENSE v repozitáři zdrojového kódu.",
+    "Version": "Verze",
+    "Developer": "Vývojář",
+    "Close": "Zavřít",
+    "Exporting PDF…": "Probíhá export PDF…",
     "Print-ready covers": "Obaly připravené k tisku",
     "Open cover (PNG or JPEG)": "Otevřít obal (PNG nebo JPEG)",
     "No image selected": "Není vybrán žádný obrázek",
@@ -55,6 +67,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "Export se nezdařil: {error}"
   },
   "de": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "DVD- und Blu-ray-Cover mit exakten physischen Abmessungen für den A4-Druck vorbereiten.",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint steht unter der GNU General Public License, ausschließlich Version 3 (GPL-3.0-only).\n\nDieses Programm wird ohne jegliche Gewährleistung bereitgestellt, soweit gesetzlich zulässig.\n\nDie vollständigen Lizenzbedingungen stehen in der Datei LICENSE im Quellcode-Repository.",
+    "Version": "Version",
+    "Developer": "Entwickler",
+    "Close": "Schließen",
+    "Exporting PDF…": "PDF wird exportiert…",
     "Print-ready covers": "Druckfertige Cover",
     "Open cover (PNG or JPEG)": "Cover öffnen (PNG oder JPEG)",
     "No image selected": "Kein Bild ausgewählt",
@@ -82,6 +100,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "Export fehlgeschlagen: {error}"
   },
   "es": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "Prepara carátulas de DVD y Blu-ray con dimensiones físicas exactas para imprimir en A4.",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint se distribuye bajo la GNU General Public License, únicamente versión 3 (GPL-3.0-only).\n\nEste programa se proporciona sin garantía alguna, en la medida permitida por la legislación aplicable.\n\nConsulta el archivo LICENSE del repositorio del código fuente para conocer los términos completos de la licencia.",
+    "Version": "Versión",
+    "Developer": "Desarrollador",
+    "Close": "Cerrar",
+    "Exporting PDF…": "Exportando PDF…",
     "Print-ready covers": "Carátulas listas para imprimir",
     "Open cover (PNG or JPEG)": "Abrir carátula (PNG o JPEG)",
     "No image selected": "Ninguna imagen seleccionada",
@@ -109,6 +133,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "Error al exportar: {error}"
   },
   "fr": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "Préparez des jaquettes DVD et Blu-ray aux dimensions physiques exactes pour une impression A4.",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint est distribué sous la GNU General Public License, version 3 uniquement (GPL-3.0-only).\n\nCe programme est fourni sans aucune garantie, dans les limites autorisées par la loi applicable.\n\nConsultez le fichier LICENSE du dépôt du code source pour les conditions complètes de la licence.",
+    "Version": "Version",
+    "Developer": "Développeur",
+    "Close": "Fermer",
+    "Exporting PDF…": "Exportation du PDF…",
     "Print-ready covers": "Jaquettes prêtes à imprimer",
     "Open cover (PNG or JPEG)": "Ouvrir une jaquette (PNG ou JPEG)",
     "No image selected": "Aucune image sélectionnée",
@@ -136,6 +166,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "Échec de l’exportation : {error}"
   },
   "ja": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "DVD と Blu-ray のカバーを正確な実寸で A4 印刷用に作成します。",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint は GNU General Public License バージョン 3 のみ（GPL-3.0-only）に基づいて配布されています。\n\nこのプログラムは、適用法で認められる範囲において、一切の保証なく提供されます。\n\nライセンスの全条項は、ソースコードのリポジトリにある LICENSE ファイルをご覧ください。",
+    "Version": "バージョン",
+    "Developer": "開発者",
+    "Close": "閉じる",
+    "Exporting PDF…": "PDF を書き出しています…",
     "Print-ready covers": "印刷用カバーを作成",
     "Open cover (PNG or JPEG)": "カバーを開く（PNG または JPEG）",
     "No image selected": "画像が選択されていません",
@@ -163,6 +199,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "書き出しに失敗しました: {error}"
   },
   "ko": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "DVD 및 Blu-ray 커버를 정확한 실제 크기로 A4 인쇄용으로 준비합니다.",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint는 GNU General Public License 버전 3 전용(GPL-3.0-only)으로 배포됩니다.\n\n이 프로그램은 관련 법률이 허용하는 범위 내에서 어떠한 보증도 없이 제공됩니다.\n\n전체 라이선스 조건은 소스 코드 저장소의 LICENSE 파일을 참조하세요.",
+    "Version": "버전",
+    "Developer": "개발자",
+    "Close": "닫기",
+    "Exporting PDF…": "PDF 내보내는 중…",
     "Print-ready covers": "인쇄용 커버 준비",
     "Open cover (PNG or JPEG)": "커버 열기 (PNG 또는 JPEG)",
     "No image selected": "선택한 이미지 없음",
@@ -190,6 +232,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "내보내기 실패: {error}"
   },
   "pl": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "Przygotuj okładki DVD i Blu-ray o dokładnych wymiarach do druku na A4.",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint jest udostępniany na licencji GNU General Public License, wyłącznie w wersji 3 (GPL-3.0-only).\n\nProgram jest dostarczany bez jakiejkolwiek gwarancji, w zakresie dozwolonym przez obowiązujące prawo.\n\nPełne warunki licencji znajdują się w pliku LICENSE w repozytorium kodu źródłowego.",
+    "Version": "Wersja",
+    "Developer": "Programista",
+    "Close": "Zamknij",
+    "Exporting PDF…": "Eksportowanie PDF…",
     "Print-ready covers": "Okładki gotowe do druku",
     "Open cover (PNG or JPEG)": "Otwórz okładkę (PNG lub JPEG)",
     "No image selected": "Nie wybrano obrazu",
@@ -217,6 +265,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "Eksport nie powiódł się: {error}"
   },
   "pt_BR": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "Prepare capas de DVD e Blu-ray com dimensões físicas exatas para impressão em A4.",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint é distribuído sob a GNU General Public License, somente versão 3 (GPL-3.0-only).\n\nEste programa é fornecido sem qualquer garantia, na medida permitida pela legislação aplicável.\n\nConsulte o arquivo LICENSE no repositório do código-fonte para os termos completos da licença.",
+    "Version": "Versão",
+    "Developer": "Desenvolvedor",
+    "Close": "Fechar",
+    "Exporting PDF…": "Exportando PDF…",
     "Print-ready covers": "Capas prontas para imprimir",
     "Open cover (PNG or JPEG)": "Abrir capa (PNG ou JPEG)",
     "No image selected": "Nenhuma imagem selecionada",
@@ -244,6 +298,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "Falha ao exportar: {error}"
   },
   "ru": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "Подготовка обложек DVD и Blu-ray с точными физическими размерами для печати на A4.",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint распространяется по лицензии GNU General Public License, только версии 3 (GPL-3.0-only).\n\nЭта программа предоставляется без каких-либо гарантий в пределах, допускаемых применимым законодательством.\n\nПолные условия лицензии приведены в файле LICENSE в репозитории исходного кода.",
+    "Version": "Версия",
+    "Developer": "Разработчик",
+    "Close": "Закрыть",
+    "Exporting PDF…": "Экспорт PDF…",
     "Print-ready covers": "Обложки для печати",
     "Open cover (PNG or JPEG)": "Открыть обложку (PNG или JPEG)",
     "No image selected": "Изображение не выбрано",
@@ -271,6 +331,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "Ошибка экспорта: {error}"
   },
   "tr": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "DVD ve Blu-ray kapaklarını A4 baskı için doğru fiziksel boyutlarda hazırlayın.",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint, GNU General Public License yalnızca sürüm 3 (GPL-3.0-only) kapsamında lisanslanmıştır.\n\nBu program, yürürlükteki yasaların izin verdiği ölçüde hiçbir garanti olmaksızın sunulur.\n\nLisans koşullarının tamamı için kaynak kod deposundaki LICENSE dosyasına bakın.",
+    "Version": "Sürüm",
+    "Developer": "Geliştirici",
+    "Close": "Kapat",
+    "Exporting PDF…": "PDF dışa aktarılıyor…",
     "Print-ready covers": "Yazdırmaya hazır kapaklar",
     "Open cover (PNG or JPEG)": "Kapak aç (PNG veya JPEG)",
     "No image selected": "Görsel seçilmedi",
@@ -298,6 +364,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "Dışa aktarma başarısız: {error}"
   },
   "zh_CN": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "以精确的实际尺寸制作 DVD 和 Blu-ray 封面，供 A4 打印使用。",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint 根据 GNU 通用公共许可证（仅限第 3 版，GPL-3.0-only）授权。\n\n在适用法律允许的范围内，本程序不提供任何担保。\n\n完整的许可条款请参阅源代码仓库中的 LICENSE 文件。",
+    "Version": "版本",
+    "Developer": "开发者",
+    "Close": "关闭",
+    "Exporting PDF…": "正在导出 PDF…",
     "Print-ready covers": "准备打印的封面",
     "Open cover (PNG or JPEG)": "打开封面（PNG 或 JPEG）",
     "No image selected": "未选择图片",
@@ -325,6 +397,12 @@ TRANSLATIONS = {
     "Export failed: {error}": "导出失败：{error}"
   },
   "zh_TW": {
+    "Prepare DVD and Blu-ray covers at accurate physical dimensions for A4 printing.": "以精確的實際尺寸製作 DVD 和 Blu-ray 封面，供 A4 列印使用。",
+    "CoverPrint is licensed under the GNU General Public License, version 3 only (GPL-3.0-only).\n\nThis program comes with absolutely no warranty, to the extent permitted by applicable law.\n\nSee the LICENSE file in the source repository for the complete license terms.": "CoverPrint 依據 GNU 通用公共授權條款（僅限第 3 版，GPL-3.0-only）授權。\n\n在適用法律允許的範圍內，本程式不提供任何擔保。\n\n完整的授權條款請參閱原始碼儲存庫中的 LICENSE 檔案。",
+    "Version": "版本",
+    "Developer": "開發者",
+    "Close": "關閉",
+    "Exporting PDF…": "正在匯出 PDF…",
     "Print-ready covers": "準備列印的封面",
     "Open cover (PNG or JPEG)": "開啟封面（PNG 或 JPEG）",
     "No image selected": "尚未選擇圖片",

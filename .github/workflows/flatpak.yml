@@ -1,8 +1,7 @@
 name: Build Flatpak
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
+  workflow_call:
 permissions:
   contents: write
 jobs:
@@ -25,29 +24,6 @@ jobs:
       - name: Upload release bundle
         uses: actions/upload-artifact@v4
         with:
-          name: coverprint-v1.1.0
+          name: coverprint-v1.2.0
           path: CoverPrint.flatpak
           if-no-files-found: error
-  release:
-    needs: flatpak
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: coverprint-v1.1.0
-      - name: Publish CoverPrint 1.1.0 once
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          CURRENT_HEAD="$(gh api "repos/$GH_REPO/commits/main" --jq .sha)"
-          if [ "$CURRENT_HEAD" != "$GITHUB_SHA" ]; then
-            echo "Skipping outdated build: main has advanced."
-            exit 0
-          fi
-          if gh release view v1.1.0 >/dev/null 2>&1; then
-            echo "Release v1.1.0 already exists; not replacing it."
-          else
-            gh release create v1.1.0 CoverPrint.flatpak --target "$GITHUB_SHA" --title "CoverPrint 1.1.0" --notes "Updated to GNOME 51 and improved app-store metadata."
-          fi
