@@ -122,6 +122,22 @@ class WindowsTests(unittest.TestCase):
             self.assertEqual(list(Path(self.directory.name).glob("tmp*.pdf")), [])
         window.close()
 
+    def test_about_uses_current_language(self):
+        window = cp.CoverPrintWindow()
+
+        def inspect_dialog(dialog):
+            self.assertIn(cp.tr(cp.ABOUT_DESCRIPTION), dialog.text())
+            self.assertIn(cp.tr(cp.ABOUT_LICENSE), dialog.text())
+            self.assertEqual(dialog.windowTitle(), cp.tr("About CoverPrint"))
+            self.assertEqual(dialog.buttons()[0].text(), cp.tr("Close"))
+            return 0
+
+        for language in ("en", *cp.TRANSLATIONS, "unsupported"):
+            with patch.object(cp, "LANGUAGE", language):
+                with patch.object(cp.QMessageBox, "exec", new=inspect_dialog):
+                    window.show_about()
+        window.close()
+
     def test_english_fallback(self):
         with patch.object(cp, "LANGUAGE", "unknown"):
             self.assertEqual(cp.tr(cp.ABOUT_DESCRIPTION), cp.ABOUT_DESCRIPTION)

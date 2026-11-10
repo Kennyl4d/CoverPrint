@@ -31,6 +31,17 @@ jobs:
         run: |
           pyinstaller --noconfirm --clean --windowed --onedir --name CoverPrint --add-data "app/translations.py;." windows/coverprint_windows.py
           if (!(Test-Path dist/CoverPrint/CoverPrint.exe)) { throw "Executable missing" }
+      - name: Smoke test packaged application
+        shell: pwsh
+        run: |
+          $env:QT_QPA_PLATFORM = "offscreen"
+          $process = Start-Process -FilePath (Resolve-Path dist/CoverPrint/CoverPrint.exe) -PassThru -WindowStyle Hidden
+          try {
+            Start-Sleep -Seconds 5
+            if ($process.HasExited) { throw "Packaged application exited during startup: $($process.ExitCode)" }
+          } finally {
+            if (!$process.HasExited) { Stop-Process -Id $process.Id }
+          }
       - name: Package portable ZIP
         shell: pwsh
         run: |

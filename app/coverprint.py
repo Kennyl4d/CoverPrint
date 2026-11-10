@@ -224,8 +224,11 @@ class CoverPrint(Adw.Application):
         except Exception as exc:
             error = str(exc)
         finally:
-            if temporary is not None:
-                Path(temporary).unlink(missing_ok=True)
+            try:
+                if temporary is not None:
+                    Path(temporary).unlink(missing_ok=True)
+            except OSError as exc:
+                error = error or str(exc)
             GLib.idle_add(self.export_completed, path, error)
 
     def export_completed(self, path, error):

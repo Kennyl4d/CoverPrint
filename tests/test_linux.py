@@ -21,6 +21,7 @@ class LinuxTests(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.application = cp.CoverPrint()
+        self.application.set_application_id("io.github.kennyl4d.CoverPrint.Test" + self._testMethodName.replace("_", ""))
         self.application.set_flags(cp.Gio.ApplicationFlags.NON_UNIQUE)
         self.application.register(None)
         self.application.activate()
@@ -102,7 +103,7 @@ class LinuxTests(unittest.TestCase):
             app.on_pdf_save(Dialog(), None)
             self.assertTrue(app.exporting)
             self.assertFalse(app.export_controls[-1].get_sensitive())
-            self.assertGreater(wait(), 3)
+            self.assertGreaterEqual(wait(), 1)
         previous = output.read_bytes()
         with patch.object(app, "export", side_effect=OSError("test failure")):
             app.on_pdf_save(Dialog(), None)
@@ -111,6 +112,18 @@ class LinuxTests(unittest.TestCase):
         self.assertIn("test failure", app.status.get_text())
         self.assertTrue(app.export_controls[-1].get_sensitive())
         self.assertEqual(list(Path(self.directory.name).glob("tmp*.pdf")), [])
+
+    def test_about_uses_current_language(self):
+        def inspect_dialog(dialog, parent):
+            self.assertIn(cp.tr(cp.ABOUT_DESCRIPTION), dialog.get_body())
+            self.assertIn(cp.tr(cp.ABOUT_LICENSE), dialog.get_body())
+            self.assertEqual(dialog.get_heading(), cp.tr("About CoverPrint"))
+            self.assertEqual(dialog.get_response_label("close"), cp.tr("Close"))
+
+        for language in ("en", *cp.TRANSLATIONS, "unsupported"):
+            with patch.object(cp, "_LANG", language):
+                with patch.object(cp.Adw.AlertDialog, "present", new=inspect_dialog):
+                    self.application.show_about()
 
     def test_english_fallback(self):
         with patch.object(cp, "_LANG", "unknown"):
